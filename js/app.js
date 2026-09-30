@@ -706,7 +706,10 @@ function stickFooterToBottom()
 			footer_height			= public_vars.$mainFooter.outerHeight(true),
 			main_content_height	  = public_vars.$mainFooter.position().top + footer_height,
 			main_content_height_only = main_content_height - footer_height,
-			extra_height			 = public_vars.$horizontalNavbar.outerHeight();
+			// 本主题的导航栏是 navbar.user-info-navbar，不存在 .navbar.horizontal-menu；
+			// outerHeight() 会返回 undefined，算式变 NaN 而写不进 margin-top，
+			// 页脚就顶不到底部（Copyright 下方留白）。故兜底为 0。
+			extra_height = (public_vars.$horizontalNavbar.outerHeight() || 0);
 		if(win_height > main_content_height - parseInt(public_vars.$mainFooter.css('marginTop'), 10))
 		{
 			public_vars.$mainFooter.css({
