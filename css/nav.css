@@ -346,3 +346,20 @@ input[type="button"],input[type="submit"]{background-color:#222;border:0;-webkit
 .black .siteico{background:#222}
 .black .posts-nav{color:rgba(221,221,221,.2)}
 .black .input-group-addon{color:#ddd;background:#26282a;border-color:#26282a}
+
+/* ==== 侧边栏滚动条隐藏开始（本地修正） ==== */
+/* 侧边栏不显示滚动条。
+   主题的 perfect-scrollbar 在菜单高于视口时，会在鼠标移到面板边缘时显示一条 5px
+   轨道（.ps-container:hover .ps-scrollbar-y-rail{opacity:.6}）；Windows 11 的
+   原生滚动条同样是"悬停才浮现"。这里把两种都隐藏，只看外观、不影响滚动：
+   下面的 overflow-y:auto 保证菜单仍可用滚轮滚动，不会被裁到够不着。 */
+.sidebar-menu.fixed .sidebar-menu-inner{overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:none;-ms-overflow-style:none;}
+.sidebar-menu.fixed .sidebar-menu-inner::-webkit-scrollbar{width:0;height:0;display:none;}
+.sidebar-menu .main-menu,
+.sidebar-menu .main-menu ul{scrollbar-width:none;-ms-overflow-style:none;}
+.sidebar-menu .main-menu::-webkit-scrollbar,
+.sidebar-menu .main-menu ul::-webkit-scrollbar{width:0;height:0;display:none;}
+.sidebar-menu .ps-scrollbar-x-rail,
+.sidebar-menu .ps-scrollbar-y-rail{display:none!important;}
+/* ==== 侧边栏滚动条隐藏结束 ==== */
