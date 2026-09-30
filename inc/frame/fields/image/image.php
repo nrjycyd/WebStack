@@ -30,7 +30,9 @@ class CSFramework_Option_Image extends CSFramework_Options {
         $preview = $value;
       }
     }
-    $preview = $value;
+    // 该字段也用于填写 Iconify 图标名（如 mdi:home），这里转成地址，
+    // 否则后台预览会显示成破图（前端渲染由 io_theme_get_thumb() 处理）
+    $preview = function_exists( 'io_iconify_url' ) ? io_iconify_url( $value ) : $value;
     echo '<input type="text" name="'. $this->element_name() .'" value="'. $this->element_value() .'"'. $this->element_class() . $this->element_attributes() .'/>';
     echo '<div class="cs-image-preview'. $hidden .'"><div class="cs-preview"><i class="fa fa-times cs-remove"></i><img src="'. $preview .'" alt="preview" /></div></div>';
     echo '<a href="#" class="button button-primary cs-add">'. $add .'</a>';

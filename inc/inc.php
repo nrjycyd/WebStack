@@ -770,6 +770,57 @@ function io_get_excerpt($count = 90,$meta_key = '_seo_desc', $trimmarker = '...'
     return $excerpt;
 }
 /**
+ * 把 Iconify 图标名转成可直接用于 <img src> 的地址。
+ *
+ * 「图标」字段（_thumbnail）现在支持三种填法，本函数只处理第 3 种：
+ *   ① 本地图片   /wp-content/uploads/xxx.png      -> 原样返回
+ *   ② 图片链接   https://… / //…                  -> 原样返回
+ *   ③ Iconify 名称  mdi:home / simple-icons:github
+ *                                              -> https://api.iconify.design/mdi/home.svg?height=40
+ *
+ * 不是 Iconify 名称、也不是可识别地址时一律原样返回，交回原有的兜底逻辑。
+ *
+ * @param mixed $value 字段里填的原始值
+ * @param int   $size  输出 SVG 的高度（px）。SVG 是矢量，放大显示不会糊。
+ * @return mixed
+ */
+function io_iconify_url($value, $size = 40) {
+    if (!is_string($value)) {
+        return $value;
+    }
+    /*
+     * $name 只用于匹配，不覆盖 $value —— 凡不是 Iconify 名称的输入都必须
+     * **原样返回**，否则会改变调用方既有的兜底行为（例如 '   ' 原本会走到
+     * 默认图标，若被改成 '' 就会转去请求 favicon API）。
+     */
+    $name = trim($value);
+    if ($name === '') {
+        return $value;
+    }
+    /*
+     * 只认「前缀:名称」这种 Iconify 命名：两段各自以字母数字开头、只含
+     * 小写字母/数字/连字符。这样才不会误伤下面这些含冒号的值：
+     *   https://example.com/a.png   （冒号后含 / 和 .）
+     *   data:image/png;base64,…     （冒号后含 / ; ,）
+     *   C:\path\to\icon.png         （冒号后含 \ 和 空格）
+     */
+    if (!preg_match('/^([a-z0-9]+(?:-[a-z0-9]+)*):([a-z0-9]+(?:-[a-z0-9]+)*)$/i', $name, $m)) {
+        return $value;
+    }
+    // 名称里必须含字母。Iconify 图标名从不纯数字，借此挡掉 tel:12345 这类值。
+    if (!preg_match('/[a-z]/i', $m[2])) {
+        return $value;
+    }
+    $size = intval($size);
+    if ($size <= 0) {
+        $size = 40;
+    }
+    // Iconify 的名称一律小写
+    return 'https://api.iconify.design/' . strtolower($m[1]) . '/' . strtolower($m[2])
+         . '.svg?height=' . $size;
+}
+
+/**
  * 获取特色图地址
  */
 function io_theme_get_thumb($post = null){
@@ -778,7 +829,8 @@ function io_theme_get_thumb($post = null){
     }
     $post_thumbnail_src = get_post_meta($post->ID, '_thumbnail', true);
     if(!empty($post_thumbnail_src)){
-        return $post_thumbnail_src;
+        // 支持把 Iconify 图标名（如 mdi:home）填在这个字段里
+        return io_iconify_url($post_thumbnail_src);
     }
 	if( has_post_thumbnail() ){    //如果有特色缩略图，则输出缩略图地址
 		$thumbnail_src = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID),'full');

@@ -42,7 +42,7 @@ include( 'templates/header-nav.php' );
                             <div class="col-12 col-sm-4 col-lg-3">
                                 <?php
                                 $m_link_url  = get_post_meta($post->ID, '_sites_link', true);
-                                $m_thumbnail = get_post_meta(get_the_ID(), '_thumbnail', true);
+                                $m_thumbnail = io_iconify_url(get_post_meta(get_the_ID(), '_thumbnail', true));
                                 if ($m_thumbnail == '' && $m_link_url == '')
                                     $imgurl = get_theme_file_uri('/images/favicon.png');
                                 else

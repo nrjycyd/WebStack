@@ -363,3 +363,18 @@ input[type="button"],input[type="submit"]{background-color:#222;border:0;-webkit
 .sidebar-menu .ps-scrollbar-x-rail,
 .sidebar-menu .ps-scrollbar-y-rail{display:none!important;}
 /* ==== 侧边栏滚动条隐藏结束 ==== */
+
+/* ==== 卡片图标外观开始（本地修正） ==== */
+/* 只作用于网址卡片图标（site-card.php 里的 .xe-comment-entry img），
+   不动全局的 .img-circle，以免影响头像等其它地方。
+
+   1) 取消灰色圆底
+      nav.css 原本给 .xe-comment-entry img 加了 background:rgba(136,136,136,.15)；
+      Iconify 的单色 SVG 自带留白，压在上面会从字形周围透出一圈灰。
+
+   2) 圆形遮罩改方形
+      .img-circle 来自 bootstrap（border-radius:50%），把 40px 图标裁成圆形、
+      切掉四角。此处选择器优先级更高（0,1,1 > 0,1,0），可直接覆盖。
+      想要「圆角方形」（更接近 App 图标观感），把 0 换成 6px 即可。 */
+.xe-comment-entry img{background:none;border-radius:0}
+/* ==== 卡片图标外观结束 ==== */
